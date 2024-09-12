@@ -1,0 +1,24 @@
+torch
+torchaudio
+numpy
+matplotlib
+scipy
+progressbar2
+huggingface_hub
+soundfile
+pyyaml
+tqdm
+Pillow
+timm
+transformers
+diffusers
+einops
+safetensors
+librosa
+torchlibrosa
+unidecode
+phonemizer # might need to update setuptools
+thop
+ftfy
+pandas
+sentencepiece

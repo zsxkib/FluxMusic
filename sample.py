@@ -6,11 +6,21 @@ from einops import rearrange, repeat
 from PIL import Image
 from diffusers import AutoencoderKL
 from transformers import SpeechT5HifiGan
+import matplotlib.pyplot as plt
+import numpy as np
 
 from utils import load_t5, load_clap, load_ae
 from train import RF 
 from constants import build_model
 
+MODEL_CACHE = "models"
+os.environ["HF_DATASETS_OFFLINE"] = "1"
+os.environ["TRANSFORMERS_OFFLINE"] = "1"
+os.environ["HF_HOME"] = MODEL_CACHE
+os.environ["TORCH_HOME"] = MODEL_CACHE
+os.environ["HF_DATASETS_CACHE"] = MODEL_CACHE
+os.environ["TRANSFORMERS_CACHE"] = MODEL_CACHE
+os.environ["HUGGINGFACE_HUB_CACHE"] = MODEL_CACHE
 
 def prepare(t5, clip, img, prompt):
     bs, c, h, w = img.shape
@@ -90,23 +100,36 @@ def main(args):
         w=8,
         ph=2,
         pw=2,)
-    # print(images.size())
     latents = 1 / vae.config.scaling_factor * images
     mel_spectrogram = vae.decode(latents).sample 
     print(mel_spectrogram.size()) 
     
+    # Create the 'wav' and 'spectrograms' directories if they don't exist
+    os.makedirs('wav', exist_ok=True)
+    os.makedirs('spectrograms', exist_ok=True)
+
     for i in range(L): 
         x_i = mel_spectrogram[i]
         if x_i.dim() == 4:
             x_i = x_i.squeeze(1)
+        
+        # Save spectrogram as image
+        plt.figure(figsize=(10, 4))
+        plt.imshow(x_i.cpu().numpy()[0], aspect='auto', origin='lower')
+        plt.colorbar(format='%+2.0f dB')
+        plt.title(f'Mel Spectrogram {i+1}')
+        plt.tight_layout()
+        plt.savefig(f'spectrograms/spectrogram_{i+1}.png')
+        plt.close()
+
         waveform = vocoder(x_i)
         waveform = waveform[0].cpu().float().detach().numpy()
         print(waveform.shape)
-        # import soundfile as sf
-        # sf.write('reconstruct.wav', waveform, samplerate=16000) 
-        from  scipy.io import wavfile 
-        wavfile.write('wav/sample_' + str(i) + '.wav', 16000, waveform) 
-    
+        from scipy.io import wavfile 
+        wavfile.write(f'wav/sample_{i+1}.wav', 16000, waveform) 
+
+    print("Spectrograms saved in 'spectrograms' directory")
+    print("Audio files saved in 'wav' directory")
 
 if __name__ == "__main__": 
     parser = argparse.ArgumentParser()
