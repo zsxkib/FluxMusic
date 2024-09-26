@@ -1,8 +1,4 @@
 import os
-from torch import Tensor, nn
-from transformers import (CLIPTextModel, CLIPTokenizer, T5EncoderModel,
-                          T5Tokenizer, AutoTokenizer, ClapTextModel)
-
 MODEL_CACHE = "models"
 os.environ["HF_DATASETS_OFFLINE"] = "1"
 os.environ["TRANSFORMERS_OFFLINE"] = "1"
@@ -11,6 +7,9 @@ os.environ["TORCH_HOME"] = MODEL_CACHE
 os.environ["HF_DATASETS_CACHE"] = MODEL_CACHE
 os.environ["TRANSFORMERS_CACHE"] = MODEL_CACHE
 os.environ["HUGGINGFACE_HUB_CACHE"] = MODEL_CACHE
+from torch import Tensor, nn
+from transformers import (CLIPTextModel, CLIPTokenizer, T5EncoderModel,
+                          T5Tokenizer, AutoTokenizer, ClapTextModel)
 
 class HFEmbedder(nn.Module):
     def __init__(self, version: str, max_length: int, **hf_kwargs):

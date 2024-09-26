@@ -1,4 +1,12 @@
 import os 
+MODEL_CACHE = "models"
+os.environ["HF_DATASETS_OFFLINE"] = "1"
+os.environ["TRANSFORMERS_OFFLINE"] = "1"
+os.environ["HF_HOME"] = MODEL_CACHE
+os.environ["TORCH_HOME"] = MODEL_CACHE
+os.environ["HF_DATASETS_CACHE"] = MODEL_CACHE
+os.environ["TRANSFORMERS_CACHE"] = MODEL_CACHE
+os.environ["HUGGINGFACE_HUB_CACHE"] = MODEL_CACHE
 import torch 
 import argparse
 import math 
@@ -13,14 +21,7 @@ from utils import load_t5, load_clap, load_ae
 from train import RF 
 from constants import build_model
 
-MODEL_CACHE = "models"
-os.environ["HF_DATASETS_OFFLINE"] = "1"
-os.environ["TRANSFORMERS_OFFLINE"] = "1"
-os.environ["HF_HOME"] = MODEL_CACHE
-os.environ["TORCH_HOME"] = MODEL_CACHE
-os.environ["HF_DATASETS_CACHE"] = MODEL_CACHE
-os.environ["TRANSFORMERS_CACHE"] = MODEL_CACHE
-os.environ["HUGGINGFACE_HUB_CACHE"] = MODEL_CACHE
+
 
 def prepare(t5, clip, img, prompt):
     bs, c, h, w = img.shape
